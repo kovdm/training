@@ -1,9 +1,12 @@
 package com.chat.server;
 
+import com.chat.packets.Packet;
+import com.chat.packets.RegistrationPacket;
+
 import java.io.*;
 import java.net.Socket;
 
-public class Client extends Thread {
+public class Client implements Runnable {
 
     private final Socket clientSocket;
     private final ChatServer server;
@@ -15,11 +18,10 @@ public class Client extends Thread {
         server = ChatServer.getInstance();
         this.clientSocket = clientSocket;
 
-        ois = new ObjectInputStream(clientSocket.getInputStream());
-        oos = new ObjectOutputStream(clientSocket.getOutputStream());
+        ois = new ObjectInputStream(this.clientSocket.getInputStream());
+        oos = new ObjectOutputStream(this.clientSocket.getOutputStream());
     }
 
-    @Override
     public void run() {
         try {
             /*Object obj;
@@ -30,8 +32,8 @@ public class Client extends Thread {
             } else {
                 Packet p = (Packet) obj;
             }*/
-
-            Packet p = (Packet) ois.readObject();
+            Object obj = ois.readObject();
+            Packet p = (Packet) obj;
             if (p.getFlag() == 0) {
                 System.out.println("Somebody wants to register!");
                 RegistrationPacket regPacket = (RegistrationPacket) ois.readObject();

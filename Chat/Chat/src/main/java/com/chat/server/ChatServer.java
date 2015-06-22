@@ -1,5 +1,7 @@
 package com.chat.server;
 
+import com.chat.packets.Packet;
+import com.chat.packets.RegistrationPacket;
 import com.chat.db.HibernateUtil;
 import org.hibernate.Session;
 

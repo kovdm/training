@@ -1,3 +1,5 @@
+import com.chat.client.ClientGUI;
+
 import javax.swing.*;
 
 public class App {

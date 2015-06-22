@@ -1,6 +1,6 @@
 package com.chat.security;
 
-public class Cryptography {
+public class Crypto {
 
 	/**
 	 * This is implementation of Password-Based Key Derivation Function 2 
@@ -29,6 +29,6 @@ public class Cryptography {
 	 * PBKDF(String password, int dkLen)
 	 * Assuming that PRF - SHA2, Salt
 	 */
-	 public String PBKDF2() { }
+	 public String PBKDF2() { return ""; }
  
 }

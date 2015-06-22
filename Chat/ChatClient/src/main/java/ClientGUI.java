@@ -5,9 +5,9 @@ import java.awt.event.ActionListener;
 
 public class ClientGUI extends JFrame {
 
+    private ChatClient chatClient;
     private JTextArea messageWindow;
     private JTextField inputMessage;
-    private ChatClient chatClient;
 
     public ClientGUI() {
         super("Client");
@@ -34,7 +34,6 @@ public class ClientGUI extends JFrame {
         add(mainPanel);
 
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        //setSize(400, 300);
         pack();
         centredFrame();
         setVisible(true);
@@ -88,7 +87,7 @@ public class ClientGUI extends JFrame {
                     inputs[0] = loginPane;
                     int reply = JOptionPane.showConfirmDialog(null, inputs, "Log in", JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
                     if (reply == 0) {
-                        chatClient.connect(loginField.getText(), passwordField.getText());
+                        chatClient.login(loginField.getText(), passwordField.getText());
                         messageWindow.append("Connected to server");
                     } else {
                         System.out.println(loginField.getText());

@@ -15,7 +15,7 @@ public class ChatClient {
     private ObjectOutputStream oos;
     private String login;
 
-    public void connect(String login, String password) {
+    public void connect() {
 
         try {
             clientSocket = new Socket(IP, PORT);
@@ -25,21 +25,16 @@ public class ChatClient {
             oos = new ObjectOutputStream(clientSocket.getOutputStream());
             ois = new ObjectInputStream(clientSocket.getInputStream());
 
-            login(login, password);
-            consoleReader();
-
             executorService.execute(new ServerListener(ois));
         } catch (IOException e) {
             e.printStackTrace();
         }
-
     }
 
-    private void login(String login, String password) {
+    public void login(String login, String password) {
         try {
-            Packet packet = new Packet(login, null, null);
-            oos.writeObject(packet);
-            oos.flush();
+            connect();
+            sendPacket(2, login, null, null);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -47,6 +42,8 @@ public class ChatClient {
 
     public boolean register(String login, String password, String name, String phone) {
         try {
+            connect();
+            sendPacket(0, "newUser", null, "newUser");
             RegistrationPacket packet = new RegistrationPacket(login, password, name, phone);
             oos.writeObject(packet);
             oos.flush();
@@ -56,12 +53,17 @@ public class ChatClient {
             }
         } catch (IOException e) {
             e.printStackTrace();
+        } finally {
+            try {
+                close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
         return false;
     }
 
     private void consoleReader() {
-
         Thread consoleReaderThread = new Thread(new Runnable() {
             public void run() {
                 while (true) {
@@ -70,9 +72,8 @@ public class ChatClient {
                         String receiver = reader.readLine();
                         System.out.println("Enter the message");
                         String message = reader.readLine();
-                        Packet packet = new Packet(login, receiver, message);
-                        oos.writeObject(packet);
-                        oos.flush();
+
+                        sendPacket(1, login, receiver, message);
 
                         if ("exit".equals(message)) {
                             close();
@@ -85,6 +86,12 @@ public class ChatClient {
             }
         });
         consoleReaderThread.start();
+    }
+
+    private void sendPacket(int flag, String sender, String receiver, String message) throws IOException{
+        Packet packet = new Packet(flag, sender, receiver, message);
+        oos.writeObject(packet);
+        oos.flush();
     }
 
     private void close() throws IOException{

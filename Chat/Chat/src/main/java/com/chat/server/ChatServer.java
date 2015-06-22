@@ -79,4 +79,8 @@ public class ChatServer {
         session.save(p);
         session.getTransaction().commit();
     }
+
+    public boolean authorizeClient(Packet p) {
+        return false;
+    }
 }

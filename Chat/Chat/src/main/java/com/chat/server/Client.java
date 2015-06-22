@@ -22,12 +22,27 @@ public class Client extends Thread {
     @Override
     public void run() {
         try {
-            Object obj;
+            /*Object obj;
             if ((obj = ois.readObject()) instanceof RegistrationPacket) {
+                System.out.println("Somebody wants to register!");
                 RegistrationPacket p = (RegistrationPacket) obj;
                 server.registerClient(p);
             } else {
                 Packet p = (Packet) obj;
+            }*/
+
+            Packet p = (Packet) ois.readObject();
+            if (p.getFlag() == 0) {
+                System.out.println("Somebody wants to register!");
+                RegistrationPacket regPacket = (RegistrationPacket) ois.readObject();
+                server.registerClient(regPacket);
+            } else if (p.getFlag() == 2) {
+                if (!server.authorizeClient(p)) {
+                    sendPacket(new Packet(11, null, null, null));
+                    server.removeClient(this);
+                    close();
+                    Thread.currentThread().interrupt();
+                }
             }
 
             while (true) {
@@ -40,9 +55,7 @@ public class Client extends Thread {
 
                     if ("exit".equals(packet.getMessage())) {
                         server.removeClient(this);
-                        ois.close();
-                        oos.close();
-                        clientSocket.close();
+                        close();
                         Thread.currentThread().interrupt();
                         break;
                     }
@@ -89,6 +102,17 @@ public class Client extends Thread {
 
     public String getLogin() {
         return login;
+    }
+
+    private void close() {
+        try {
+            ois.close();
+            oos.close();
+            clientSocket.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        Thread.currentThread().interrupt();
     }
 
 }

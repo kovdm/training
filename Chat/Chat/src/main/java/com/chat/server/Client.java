@@ -41,7 +41,7 @@ public class Client implements Runnable {
             } else if (p.getFlag() == 2) {
                 if (!server.authorizeClient(p)) {
                     sendPacket(new Packet(11, null, null, null));
-                    server.removeClient(this);
+                    server.removeClient(p.getSender());
                     close();
                     Thread.currentThread().interrupt();
                 }
@@ -56,7 +56,7 @@ public class Client implements Runnable {
                     System.out.println(packet.getMessage());
 
                     if ("exit".equals(packet.getMessage())) {
-                        server.removeClient(this);
+                        server.removeClient(packet.getSender());
                         close();
                         Thread.currentThread().interrupt();
                         break;

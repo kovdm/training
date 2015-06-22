@@ -1,5 +1,6 @@
 package com.chat.server;
 
+import com.chat.db.JDBCConnector;
 import com.chat.packets.Packet;
 import com.chat.packets.RegistrationPacket;
 import com.chat.db.HibernateUtil;
@@ -8,6 +9,7 @@ import org.hibernate.Session;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -68,18 +70,39 @@ public class ChatServer {
         }
     }
 
-    public void removeClient(Client client) {
-        clients.remove(client);
-        System.out.println(client.getLogin() + " just disconnected.");
+    public void removeClient(String login) {
+        JDBCConnector connector = new JDBCConnector();
+        try {
+            connector.connect();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+        connector.createTable();
+        connector.removeClient(login);
+        System.out.println(login + " just disconnected.");
     }
 
     public void registerClient(RegistrationPacket p) {
         System.out.println("Try to add user to database");
-        Session session = HibernateUtil.createSessionFactory().openSession();
+        /*Session session = HibernateUtil.createSessionFactory().openSession();
 
         session.beginTransaction();
         session.save(p);
-        session.getTransaction().commit();
+        session.getTransaction().commit();*/
+
+        JDBCConnector connector = new JDBCConnector();
+        try {
+            connector.connect();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+        connector.createTable();
+        connector.addClient(p);
+
     }
 
     public boolean authorizeClient(Packet p) {

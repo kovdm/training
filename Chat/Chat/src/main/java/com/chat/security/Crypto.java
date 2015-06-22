@@ -29,6 +29,6 @@ public class Cryptography {
 	 * PBKDF(String password, int dkLen)
 	 * Assuming that PRF - SHA2, Salt
 	 */
-	 public String PBKDF2(
+	 public String PBKDF2() { }
  
 }
